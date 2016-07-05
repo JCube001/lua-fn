@@ -44,9 +44,9 @@ fn.VERSION = "0.1.0"
 -- Local Functions
 
 local function checkType(name)
-	return function(value)
-		return type(value) == name
-	end
+    return function(value)
+        return type(value) == name
+    end
 end
 
 -- Arrays
@@ -110,19 +110,19 @@ function fn.keys(object)
 end
 
 function fn.values(object)
-	local result = {}
-	for _, v in pairs(object) do
-		insert(result, v)
-	end
-	return result
+    local result = {}
+    for _, v in pairs(object) do
+        insert(result, v)
+    end
+    return result
 end
 
 function fn.pairs(object)
-	local result = {}
-	for k, v in pairs(object) do
-		insert(result, {k, v})
-	end
-	return result
+    local result = {}
+    for k, v in pairs(object) do
+        insert(result, {k, v})
+    end
+    return result
 end
 
 function fn.invert(object)
@@ -134,14 +134,14 @@ function fn.invert(object)
 end
 
 function fn.functions(object)
-	local result = {}
-	for k, v in pairs(object) do
-		if fn.isFunction(v) then
-			insert(result, k)
-		end
-	end
-	sort(result)
-	return result
+    local result = {}
+    for k, v in pairs(object) do
+        if fn.isFunction(v) then
+            insert(result, k)
+        end
+    end
+    sort(result)
+    return result
 end
 
 fn.methods = fn.functions
@@ -156,7 +156,7 @@ function fn.extend(destination, ...)
 end
 
 function fn.has(object, key)
-	return object[key] ~= nil
+    return object[key] ~= nil
 end
 
 function fn.property(key)
@@ -166,20 +166,20 @@ function fn.property(key)
 end
 
 function fn.matcher(properties)
-	return function(object)
-		return fn.isMatch(object, properties)
-	end
+    return function(object)
+        return fn.isMatch(object, properties)
+    end
 end
 
 fn.matches = fn.matcher
 
 function fn.isMatch(object, properties)
-	for k, v in pairs(properties) do
-		if object[k] ~= v then
-			return false
-		end
-	end
-	return true
+    for k, v in pairs(properties) do
+        if object[k] ~= v then
+            return false
+        end
+    end
+    return true
 end
 
 function fn.isEmpty(object)
@@ -240,26 +240,26 @@ function fn.partial(func, ...)
 end
 
 function fn.after(count, func)
-	count = count - 1
-	return function(...)
-		if count == 0 then
-			return func(...)
-		else
-			count = count - 1
-		end
-	end
+    count = count - 1
+    return function(...)
+        if count == 0 then
+            return func(...)
+        else
+            count = count - 1
+        end
+    end
 end
 
 function fn.before(count, func)
-	count = count - 1
-	local memo
-	return function(...)
-		if count > 0 then
-			count = count - 1
-			memo = func(...)
-		end
-		return memo
-	end
+    count = count - 1
+    local memo
+    return function(...)
+        if count > 0 then
+            count = count - 1
+            memo = func(...)
+        end
+        return memo
+    end
 end
 
 fn.once = fn.partial(fn.before, 2)
@@ -309,14 +309,14 @@ function fn.noop()
 end
 
 function fn.iteratee(value)
-	if not value then
-		return fn.identity
-	elseif fn.isFunction(value) then
-		return value
-	elseif fn.isTable(value) then
-		return fn.matcher(value)
-	end
-	return fn.property(value)
+    if not value then
+        return fn.identity
+    elseif fn.isFunction(value) then
+        return value
+    elseif fn.isTable(value) then
+        return fn.matcher(value)
+    end
+    return fn.property(value)
 end
 
 function fn.times(amount, iteratee)
@@ -336,7 +336,7 @@ function fn.printTable(object, name)
         print("Table: " .. name)
     end
     print("Key", "Value")
-	print("---", "-----")
+    print("---", "-----")
     for k, v in pairs(object) do
         print(k, v)
     end
@@ -347,7 +347,7 @@ function fn.printArray(array, name)
         print("Array: " .. name)
     end
     print("Index", "Value")
-	print("-----", "-----")
+    print("-----", "-----")
     for i, v in ipairs(array) do
         print(i, v)
     end
