@@ -23,16 +23,17 @@ SOFTWARE.
 --]]
 
 -- Cache global built-in functions
-local insert   = table.insert
-local ipairs   = ipairs
-local next     = next
-local pairs    = pairs
-local print    = print
-local remove   = table.remove
-local sort     = table.sort
-local tostring = tostring
-local type     = type
-local unpack   = unpack
+local getmetatable = getmetatable
+local insert       = table.insert
+local ipairs       = ipairs
+local next         = next
+local pairs        = pairs
+local print        = print
+local remove       = table.remove
+local sort         = table.sort
+local tostring     = tostring
+local type         = type
+local unpack       = unpack
 
 -- Cache global built-in variables
 local huge = math.huge
@@ -172,6 +173,54 @@ function fn.matcher(properties)
 end
 
 fn.matches = fn.matcher
+
+function fn.isEqual(a, b)
+    local typeA = type(a)
+    local typeB = type(b)
+
+    -- Check if both variables are of the same type
+    if typeA ~= typeB then
+        return false
+    end
+
+    -- Check if 'a' is not a table. If this is the case, then just invoke the
+    -- equality operator on 'a' and 'b' then return.
+    if typeA ~= "table" then
+        return a == b
+    end
+
+    -- Check if both variables are references to the same object in memory
+    if a == b then
+        return true
+    end
+
+    -- If object 'a' has an implementation of the __eq metamethod, then use it
+    -- to test for object equality
+    local mt = getmetatable(a)
+    if mt and mt.__eq then
+        return a == b
+    end
+
+    -- For all keys which 'a' has in common with 'b', check the values in 'a'
+    -- and 'b' for equality
+    for ka, va in pairs(a) do
+        local vb = b[ka]
+        if nil == vb or not fn.isEqual(va, vb) then
+            return false
+        end
+    end
+
+    -- If 'b' contains a key which is not present in 'a', then 'a' and 'b' are
+    -- not equal
+    for kb, _ in pairs(b) do
+        if nil == a[kb] then
+            return false
+        end
+    end
+
+    -- Nothing left to test. Both objects must contain all the same values.
+    return true
+end
 
 function fn.isMatch(object, properties)
     for k, v in pairs(properties) do
