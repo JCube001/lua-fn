@@ -40,7 +40,7 @@ local huge = math.huge
 
 -- The module
 local fn = {}
-fn.VERSION = "0.1.0"
+fn.VERSION = "0.2.0"
 
 -- Local Functions
 
@@ -81,6 +81,18 @@ end
 
 fn.foldr = fn.reduceRight
 
+function fn.reverse(array)
+    local result = {}
+    if fn.isString(array) then
+        result = array:reverse()
+    else
+        for i = #array, 1, -1 do
+            insert(result, array[i])
+        end
+    end
+    return result
+end
+
 -- Strings
 
 function fn.chars(str)
@@ -90,7 +102,6 @@ end
 function fn.join(separator, array)
     local result = ""
     local length = #array
-    -- FIXME: Use next()
     if length >= 1 then
         result = array[1]
         for i = 2, length do
@@ -154,6 +165,14 @@ function fn.extend(destination, ...)
         end
     end
     return destination
+end
+
+function fn.clone(object)
+    local result = {}
+    for k, v in pairs(object) do
+        result[k] = v
+    end
+    return result
 end
 
 function fn.has(object, key)
@@ -253,6 +272,8 @@ fn.isUserData = checkType("userdata")
 
 fn.isTable = checkType("table")
 
+fn.isString = checkType("string")
+
 fn.isFunction = checkType("function")
 
 fn.isNumber = checkType("number")
@@ -260,7 +281,7 @@ fn.isNumber = checkType("number")
 fn.isBoolean = checkType("boolean")
 
 function fn.isNil(object)
-    return object == nil
+    return nil == object
 end
 
 function fn.isFinite(value)
@@ -277,6 +298,35 @@ end
 
 function fn.isInteger(value)
     return value % 1 == 0
+end
+
+function fn.copy(object)
+    local result = {}
+
+    -- Handle arrays and tables as separate cases. If the input object is not
+    -- an array or a table, then it can be assigned as the result and returned
+    -- as-is.
+    if fn.isArray(object) then
+        for _, v in ipairs(object) do
+            insert(result, fn.copy(v))
+        end
+    elseif fn.isTable(object) then
+        -- If the object has a metatable, then copy the metatable and set the
+        -- copy as the metatable of the new object
+        local mt = getmetatable(object)
+        if mt then
+            setmetatable(result, fn.copy(mt))
+        end
+
+        -- Copy every value within the object
+        for k, v in pairs(object) do
+            result[k] = fn.copy(v)
+        end
+    else
+        result = object
+    end
+
+    return result
 end
 
 -- Functions
